@@ -1,13 +1,14 @@
 <?php
 
 namespace app\controllers;
+use Yii;
 
 class TestFormController extends RestController
 {
-    protected $listSetAction = ['register'];
+    protected array $listSetAction = ['register'];
     public function actionRegister() {
 
-        return $this->returnResult(['Спасибо, данные приняты']);
+        return $this->restResponseOk(['Спасибо, данные приняты']);
     }
 
     public function actionGetData() {
@@ -17,7 +18,7 @@ class TestFormController extends RestController
             'age' => '37',
             'sex' => 'муж',
         ];
-        return $this->returnResult($ret);
+        return $this->restResponseOk($ret);
     }
 
 }

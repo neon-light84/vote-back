@@ -13,6 +13,7 @@ class codes {
         'BAD_JSON' => ['code' => 100, 'mess' => 'Не удалось распарсить JSON'],
         'NO_DATA' => ['code' => 101, 'mess' => 'Нет data в пост данных'],
         'NOT_FULL_DATA' => ['code' => 102, 'mess' => 'Поле data в пост данных не полностью заполнено'],
+        'INVALID_DATA' => ['code' => 103, 'mess' => 'Не корректные данные'],
     ];
 
 }

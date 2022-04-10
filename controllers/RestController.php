@@ -8,64 +8,71 @@ use app\logic\codes;
 class RestController extends Controller
 {
     public $enableCsrfValidation = false;
-    protected $restData = '';
-    protected $restIsOk = false;
-    protected $restErr = '';
-    protected $restExtendMessage = '';
-    protected $listSetAction = []; // ОБАЗАТЕЛЬНО ПЕРЕОПРЕДЕЛИТЬ! Список экшенов, в которых присылаются данные для сохранения / обработки
+    public $layout = 'rest';
+    protected  $restRequestData = '';
+    protected bool $restRequestIsOk = false;
+    protected string $restErr = '';
+    protected string $restExtendMessage = '';
+    protected array $listSetAction = []; // ОБАЗАТЕЛЬНО ПЕРЕОПРЕДЕЛИТЬ! Список экшенов, в которых присылаются данные для сохранения / обработки
 
     // запилил полный аналог из ларавеля)))
-    protected function dd($arg) {
+    protected function dd($arg = '') {
         dump($arg);
         exit;
     }
 
-    public function returnError(string $err = ''):string {
+    // Пстроен таким образом, что бы если прилетели ошибочные данные, то сам экшен даже не вызывался.
+    public function beforeAction($action){
+        $this->restRequestIsOk = true;
+
+        // Обработка экшенов, которые присылают данные
+        if (in_array($action->id, $this->listSetAction)) {
+            if (!($_POST['data'] ?? false)) {
+                $this->restRequestIsOk = false;
+                $this->restErr = 'NO_DATA';
+            } elseif (!($this->restRequestData = json_decode($_POST['data']))) {
+                $this->restRequestIsOk = false;
+                $this->restErr = 'BAD_JSON';
+            }
+        }
+
+        if (!$this->restRequestIsOk) {
+            $this->action->actionMethod = 'restResponseError';
+        }
+
+        return parent::beforeAction($action);
+    }
+
+    public function restResponseError(string $err = '', string $restExtendMessage = ''):string {
         if (!$err) $err = $this->restErr;
+        if (!$restExtendMessage) $restExtendMessage = $this->restExtendMessage;
+        $err = trim($err);
+        $restExtendMessage = trim($restExtendMessage);
         $errParams = codes::$restError[$err] ?? false;
         if ($errParams) {
-            $returned = [
+            $restData = [
                 'status' => 'error',
                 'code' => $errParams['code'],
                 'text' => $err,
                 'message' => $errParams['mess']
             ];
-            $restExtendMessage = trim($this->restExtendMessage);
-            if ($restExtendMessage) {
-                $returned['extendMessage'] = $restExtendMessage;
-            }
         } else {
-            $returned = [
+            $restData = [
                 'status' => 'error',
                 'code' => 0,
                 'text' => 'UNKNOWN_ERROR',
                 'message' => 'Не известная ошибка'
             ];
         }
-        return json_encode($returned);
-    }
-
-    // Пстроен таким образом, что бы если прилетели ошибочные данные, то сам экшен даже не вызывался.
-    public function beforeAction($action){
-        $this->restIsOk = false;
-        if (in_array($action->id, $this->listSetAction)) {
-            if (!($_POST['data'] ?? false)) {
-                $this->action->actionMethod = 'returnError';
-                $this->restErr = 'NO_DATA';
-            } elseif (!($this->restData = json_decode($_POST['data']))) {
-                $this->action->actionMethod = 'returnError';
-                $this->restErr = 'BAD_JSON';
-            }
+        if ($restExtendMessage) {
+            $restData['extendMessage'] = $restExtendMessage;
         }
-        $this->restIsOk = true;
 
-        return parent::beforeAction($action);
+        return $this->renderFile('@app/views/rest-error.php', compact('restData') );
     }
 
-
-    protected function returnResult($arrResult):string {
-        if (!is_array($arrResult)) $arrResult = [(string)$arrResult];
-        return json_encode(['status' => 'success', 'data' => $arrResult]);
+    protected function restResponseOk($restData):string {
+        return $this->renderFile('@app/views/rest-ok.php', compact('restData') );
     }
 
 }
