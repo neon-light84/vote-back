@@ -9,7 +9,7 @@ class RestController extends Controller
 {
     public $enableCsrfValidation = false;
     public $layout = 'rest';
-    protected  $restRequestData = '';
+    protected  $restRequestData = [];
     protected bool $restRequestIsOk = false;
     protected string $restErr = '';
     protected string $restExtendMessage = '';
@@ -30,7 +30,7 @@ class RestController extends Controller
             if (!($_POST['data'] ?? false)) {
                 $this->restRequestIsOk = false;
                 $this->restErr = 'NO_DATA';
-            } elseif (!($this->restRequestData = json_decode($_POST['data']))) {
+            } elseif (!($this->restRequestData = json_decode($_POST['data'], true))) {
                 $this->restRequestIsOk = false;
                 $this->restErr = 'BAD_JSON';
             }
