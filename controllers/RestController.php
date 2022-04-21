@@ -34,6 +34,10 @@ class RestController extends Controller
                 $this->restRequestIsOk = false;
                 $this->restErr = 'BAD_JSON';
             }
+        } else {
+            if ($_POST['payload'] ?? false) {
+                $this->restRequestData = json_decode($_POST['payload'], true);
+            }
         }
 
         if (!$this->restRequestIsOk) {
