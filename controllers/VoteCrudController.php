@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\logic\Sanitizer;
+use app\models\VoteContents;
 use app\models\Votes;
 
 class VoteCrudController extends RestController
@@ -11,11 +12,25 @@ class VoteCrudController extends RestController
 
     public function actionCreate() {
         // получить такой джесон header, description, fn_type_diagramm, is_multi_select, is_display_result
-//        $vote = Votes::find()->asArray()->with('content')->all();
-//        $vote = Votes::find()->asArray()->all();
-        $vote = Votes::find()->all();
 
-        $a=4;
+        $testOne = VoteContents::find(2)->asArray()->with('vote')->one();
+
+        $vote = Votes::find(5)->with('content')->one();
+//        $vote = Votes::find()->asArray()->all();
+//        $vote = Votes::find()->all();
+
+//        $nv = new Votes();
+//        $nv->header = 'Какой автомобиль по душе?';
+//        $nv->is_display_result = true;
+//        $
+//        $nv->save();
+
+
+        $content = new VoteContents();
+        $content->item_id = 1;
+        $content->item_display = "1111";
+        $content->item_position = 1;
+        $content->link('vote', $vote);
 
         return $this->render('test', compact('vote'));
     }

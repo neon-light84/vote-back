@@ -12,5 +12,10 @@ class VoteContents extends ActiveRecord
         return 'vote_contents';
     }
 
+    public function getVote() {
+        return $this->hasOne(Votes::class, ['id' => 'fk_votes']);
+    }
+
+
 
 }
