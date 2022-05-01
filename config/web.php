@@ -50,9 +50,9 @@ $config = [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'enableStrictParsing' => true,
+            'enableStrictParsing' => false,
             'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'vote'],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'rest/vote'],
             ],
         ],
     ],

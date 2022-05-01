@@ -1,6 +1,6 @@
 <?php
 
-namespace app\controllers;
+namespace app\controllers\rest;
 use yii\rest\ActiveController;
 
 class VoteController extends ActiveController
