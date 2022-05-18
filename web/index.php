@@ -6,6 +6,8 @@ $arrAllowedOrigin = [
     'https://alex-team.ru',
     'http://localhost',
     'https://localhost',
+    'http://localhost:3000',
+    'https://localhost:3000',
 ];
 if (in_array($_SERVER['HTTP_ORIGIN'], $arrAllowedOrigin)) {
     header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
